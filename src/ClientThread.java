@@ -45,6 +45,23 @@ class ClientThread extends Thread {
                 // AUTH
                 if (commands.length > 0 && commands[0].equals("AUTH")) {
                     if (commands.length > 1 && commands[1].equals("TLS")) {
+                        send("504<CR>");
+                        continue;
+                    }
+
+                    if (commands.length > 1 && commands[1].equals("SSL")) {
+                        send("504<CR>");
+                        continue;
+                    }
+
+                    send("501<CR>");
+                    continue;
+                }
+
+                // USER
+                if (commands.length > 0 && commands[0].equals("USER")) {
+                    if (commands.length > 1) {
+                        System.out.println("Username: " + commands[1]);
                         send("332<CR>");
                         continue;
                     }
