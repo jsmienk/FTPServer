@@ -10,8 +10,8 @@
  150 File status okay; about to open data connection.
 
 
- 200 Command okay.
- 202 Command not implemented, superfluous at this site.
+ 200 Code okay.
+ 202 Code not implemented, superfluous at this site.
  211 System status, or system help reply.
  212 Directory status.
  213 File status.
@@ -54,9 +54,9 @@
  500 Syntax error, command unrecognized.
      This may include errors such as command line too long.
  501 Syntax error in parameters or arguments.
- 502 Command not implemented.
+ 502 Code not implemented.
  503 Bad sequence of commands.
- 504 Command not implemented for that parameter.
+ 504 Code not implemented for that parameter.
  530 Not logged in.
  532 Need account for storing files.
  550 Requested action not taken.
