@@ -70,7 +70,8 @@ class CommandProcessor {
                     return (Code.SYNTAX_ERROR_IN_PARAMETERS + Code.CR);
                 }
 
-                return (Code.CODE_NOT_IMPLEMENTED + Code.CR);
+                // if it is another command, it is not allowed
+                return (Code.NOT_LOGGED_IN + Code.CR);
 
             case AUTH:
                 // TODO: PWD
