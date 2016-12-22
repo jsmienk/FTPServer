@@ -26,4 +26,5 @@ class Code {
     static final int SYNTAX_ERROR_IN_PARAMETERS = 501;
     static final int CODE_NOT_IMPLEMENTED = 502;
     static final int CODE_NOT_IMPLEMENTED_FOR_PARAMETER = 504;
+    static final int NOT_LOGGED_IN = 530;
 }

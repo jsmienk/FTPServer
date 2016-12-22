@@ -13,13 +13,20 @@ class ClientThread extends Thread {
     private final Socket clientSocket;
     private final PrintWriter writer;
 
-    ClientThread(Socket clientSocket) throws IOException {
+    private final CommandProcessor processor;
+
+    ClientThread(Socket clientSocket, Server server) throws IOException {
+        assert clientSocket != null : "null socket";
+        assert server != null : "null server";
+
         this.clientSocket = clientSocket;
         writer = new PrintWriter(clientSocket.getOutputStream());
+        processor = new CommandProcessor(server);
     }
 
     @Override
     public void run() {
+        String usernameToLogin = null;
 
         // send a welcome message
         send(Code.SERVICE_READY_FOR_NEW_USER + " Sven & Jeroen's FTP Server " + Code.CR);
@@ -42,71 +49,7 @@ class ClientThread extends Thread {
 
                 final String[] commands = clientData.split(" ");
 
-                // AUTH
-                if (commands.length > 0 && commands[0].equals(Command.AUTH)) {
-                    if (commands.length > 1 && commands[1].equals(Command.TLS)) {
-                        send(Code.CODE_NOT_IMPLEMENTED_FOR_PARAMETER + Code.CR);
-                        continue;
-                    }
-
-                    if (commands.length > 1 && commands[1].equals(Command.SSL)) {
-                        send(Code.CODE_NOT_IMPLEMENTED_FOR_PARAMETER + Code.CR);
-                        continue;
-                    }
-
-                    send(Code.SYNTAX_ERROR_IN_PARAMETERS + Code.CR);
-                    continue;
-                }
-
-                // USER
-                if (commands.length > 0 && commands[0].equals(Command.USER)) {
-                    if (commands.length > 1) {
-                        System.out.println("\tUsername: " + commands[1]);
-                        send(Code.NEED_ACCOUNT_FOR_LOGIN + Code.CR);
-                        continue;
-                    }
-
-                    send(Code.SYNTAX_ERROR_IN_PARAMETERS + Code.CR);
-                    continue;
-                }
-
-                // USER
-                if (commands.length > 0 && commands[0].equals(Command.PASS)) {
-                    if (commands.length > 1) {
-                        System.out.println("\tPassword: " + commands[1]);
-                        send(Code.USER_LOGGED_IN + Code.CR);
-                        continue;
-                    }
-
-                    send(Code.SYNTAX_ERROR_IN_PARAMETERS + Code.CR);
-                    continue;
-                }
-
-                // TODO: PWD
-                if (commands.length > 0 && commands[0].equals(Command.PWD)) {
-                    send(Code.PATHNAME_CREATED + " / " + Code.CR);
-                    continue;
-                }
-
-                // TODO: CWD
-                if (commands.length > 0 && commands[0].equals(Command.CWD)) {
-                    send(Code.PATHNAME_CREATED + " / " + Code.CR);
-                    continue;
-                }
-
-                // TODO: RWD
-                if (commands.length > 0 && commands[0].equals(Command.RWD)) {
-                    send(Code.PATHNAME_CREATED + " / " + Code.CR);
-                    continue;
-                }
-
-                // TODO: SYST
-                if (commands.length > 0 && commands[0].equals(Command.SYST)) {
-                    send(Code.NAME_SYSTEM_TYPE + " UNIX " + Code.CR);
-                    continue;
-                }
-
-                send(Code.CODE_NOT_IMPLEMENTED + Code.CR);
+                send(processor.processCommand(commands));
             }
 
             clientSocket.close();
