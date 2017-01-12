@@ -14,9 +14,12 @@ import java.util.Scanner;
  */
 public class Server {
 
+    public static final int TRANSFER_PORT = 6969;
+
     static final String USERS_FILEPATH = "users/";
 
     private static final int SERVER_PORT = 2100;
+
     private static final String USERS_FILE_PATH = "users/users";
 
     private final Map<String, User> users;
@@ -41,7 +44,7 @@ public class Server {
                 if (user.length > 1) {
                     final String username = user[0];
                     final String password = user[1];
-                    users.put(username, new User(username, password,
+                    users.put(username.toLowerCase(), new User(username, password,
                             (user.length > 2 ? user[3] : "/" + username)));
                 }
             }
@@ -82,7 +85,7 @@ public class Server {
         assert password != null : "null password";
         assert !password.isEmpty() : "empty password";
 
-        final User possibleUser = users.get(username);
+        final User possibleUser = users.get(username.toLowerCase());
         if (possibleUser != null && possibleUser.isUser(password))
             return possibleUser;
         return null;

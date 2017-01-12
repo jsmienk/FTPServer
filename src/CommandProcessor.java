@@ -1,3 +1,7 @@
+import java.io.IOException;
+import java.net.Socket;
+import java.util.Arrays;
+
 /**
  * Author: Jeroen
  * Date created: 22-12-16
@@ -6,7 +10,6 @@ class CommandProcessor {
 
     private final Server server;
 
-    private User user;
     private FileDirectory directory;
 
     private State state;
@@ -52,7 +55,7 @@ class CommandProcessor {
                     if (commands.length > 1) {
                         // try to login the user
                         final String password = commands[1];
-                        user = server.loginUser(usernameToLogin, password);
+                        User user = server.loginUser(usernameToLogin, password);
                         System.out.println("\tPassword: " + password);
 
                         // failed to login
@@ -76,19 +79,40 @@ class CommandProcessor {
             case AUTH:
                 // TODO: PWD
                 if (commands.length > 0 && commands[0].equals(Command.PWD))
-                    return (Code.PATHNAME_CREATED + " " + directory.getDirectoryList() + " " + Code.CR);
+                    return (Code.PATHNAME_CREATED + " " + directory.getDirectoryList() + " is home directory " + Code.CR);
+
 
                 // TODO: CWD
                 if (commands.length > 0 && commands[0].equals(Command.CWD))
-                    return (Code.PATHNAME_CREATED + " " + directory.getDirectoryList() + " " + Code.CR);
+                    return (Code.REQUESTED_FILE_ACTION_OKAY + " " + directory.getDirectoryList() + " " + Code.CR);
+
 
                 // TODO: RWD
                 if (commands.length > 0 && commands[0].equals(Command.RWD))
-                    return (Code.PATHNAME_CREATED + " " + directory.getDirectoryList() + " " + Code.CR);
+                    return (Code.REQUESTED_FILE_ACTION_OKAY + " " + directory.getDirectoryList() + " " + Code.CR);
 
-                // TODO: SYST
+
+                // SYST
                 if (commands.length > 0 && commands[0].equals(Command.SYST))
                     return (Code.NAME_SYSTEM_TYPE + " UNIX Type: L8 " + Code.CR);
+
+
+                // TYPE I
+                if (commands.length > 1 && commands[0].equals(Command.TYPE)) {
+                    if (commands[1].equals("I"))
+                        return (Code.ACTION_SUCCESSFUL + " Type set to I " + Code.CR);
+                    return (Code.SYNTAX_ERROR_IN_PARAMETERS + Code.CR);
+                }
+
+                // EPSV
+                if (commands.length > 0 && commands[0].equals(Command.EPSV))
+                    return (Code.ENTERING_PASSIVE_MODE + " "
+                            + "(127,0,0,1,2100,6969)"
+                            + " " + Code.CR);
+
+                // LIST
+                if (commands.length > 0 && commands[0].equals(Command.LIST))
+                    return Code.ACTION_SUCCESSFUL + " " + Code.NL + " " + directory.getList() + " " + Code.CR;
 
                 return (Code.CODE_NOT_IMPLEMENTED + Code.CR);
 
@@ -103,5 +127,10 @@ class CommandProcessor {
         NO_AUTH,
         AUTH,
         TRANSFERRING
+    }
+
+    private enum IPVersion {
+        IPv4,
+        IPv6
     }
 }

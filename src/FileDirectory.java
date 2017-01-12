@@ -21,7 +21,19 @@ class FileDirectory {
 
     // TODO: implement
     String getDirectoryList() {
-        return "";
+        return "\"/" + root.getName() + "\"";
+    }
+
+    String getList() {
+        String list = "";
+
+        list += "d map " + Code.NL;
+        list += " d ook een map " + Code.NL;
+        list += " - bestand " + Code.NL;
+        list += " - bestand2 " + Code.NL;
+        list += " l link " + Code.NL;
+
+        return list;
     }
 
     /**
