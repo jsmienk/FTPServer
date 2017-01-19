@@ -115,7 +115,7 @@ class CommandProcessor {
 
                 // LIST
                 if (commands.length > 0 && commands[0].equals(Command.LIST))
-                    return Code.ACTION_SUCCESSFUL + "";
+                    return  "150";
 
                 // PORT
                 if (commands.length > 0 && commands[0].equals(Command.PORT)){
