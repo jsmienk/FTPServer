@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Arrays;
 
@@ -16,13 +17,15 @@ class CommandProcessor {
 
     private String usernameToLogin;
 
+    private Socket socket;
+
     CommandProcessor(Server server) {
         this.server = server;
         state = State.NO_AUTH;
         usernameToLogin = null;
     }
 
-    String processCommand(String[] commands) {
+    String processCommand(String[] commands) throws IOException {
 
         // what can we do, depending on our state
         switch (state) {
@@ -112,8 +115,18 @@ class CommandProcessor {
 
                 // LIST
                 if (commands.length > 0 && commands[0].equals(Command.LIST))
-                    return Code.ACTION_SUCCESSFUL + " " + Code.NL + " " + directory.getList() + " " + Code.CR;
+                    return Code.ACTION_SUCCESSFUL + "";
 
+                // PORT
+                if (commands.length > 0 && commands[0].equals(Command.PORT)){
+                    String[] values = commands[1].split(",");
+                    System.out.println();
+                    socket = new Socket();
+                    final String address = values[0]+"."+values[1]+"."+values[2]+"."+values[3];
+                    final int port = (Integer.parseInt(values[4])*256)+Integer.parseInt(values[5]);
+                    socket.bind(new InetSocketAddress(address,port));
+                    return Code.ACTION_SUCCESSFUL + Code.CR;
+                }
                 return (Code.CODE_NOT_IMPLEMENTED + Code.CR);
 
             case TRANSFERRING:
