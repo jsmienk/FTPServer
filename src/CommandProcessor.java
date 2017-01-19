@@ -104,8 +104,8 @@ class CommandProcessor {
                     return (Code.SYNTAX_ERROR_IN_PARAMETERS + Code.CR);
                 }
 
-                // EPSV
-                if (commands.length > 0 && commands[0].equals(Command.EPSV))
+                // PASV
+                if (commands.length > 0 && commands[0].equals(Command.PASV))
                     return (Code.ENTERING_PASSIVE_MODE + " "
                             + "(127,0,0,1,2100,6969)"
                             + " " + Code.CR);

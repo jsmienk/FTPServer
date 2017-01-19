@@ -23,6 +23,5 @@ class Command {
     final static String TYPE = "TYPE";
 
     // transferring
-    final static String EPSV = "EPSV";
-    final static String EPRT = "EPRT";
+    final static String PASV = "PASV";
 }
