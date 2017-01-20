@@ -48,18 +48,17 @@ class ClientThread extends Thread {
                 System.out.println(lineCount + ": " + clientData);
 
                 final String[] commands = clientData.split(" ");
-
-                send(processor.processCommand(commands));
+                send(processor.processCommand(commands, this));
             }
 
             clientSocket.close();
             System.out.println("Client disconnected.");
-        } catch (IOException ioe) {
+        } catch (IOException | InterruptedException ioe) {
             ioe.printStackTrace();
         }
     }
 
-    private void send(final String s) {
+    void send(final String s) {
         System.out.println("\t\t\t\t\t\t<--\t\t" + s);
         writer.println(s);
         writer.flush();

@@ -22,6 +22,8 @@ class Command {
     final static String SYST = "SYST";
     final static String TYPE = "TYPE";
     final static String PORT = "PORT";
+    final static String STOR = "STOR";
+    final static String RETR = "RETR";
 
     // transferring
     final static String PASV = "PASV";
