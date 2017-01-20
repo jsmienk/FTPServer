@@ -66,7 +66,7 @@ class FileDirectory {
      * @param directory the directory
      * @return only returns true if the directory was actually created
      */
-    private boolean createDirectory(File directory) {
+    public boolean createDirectory(File directory) {
         final boolean success = directory.mkdir();
         if (success)
             System.out.println("Directory '" + directory.getAbsolutePath() + "' created.");

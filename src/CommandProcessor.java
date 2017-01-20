@@ -204,6 +204,13 @@ class CommandProcessor {
                     return "";
                 }
 
+                if (commands.length > 0 && commands[0].equals(Command.MKD)) {
+                    if(commands[1]!=null){
+                        directory.createDirectory(new File(Server.USERS_FILEPATH + directory.getPath()+"/"+commands[1]));
+                    }
+                    return Code.PATHNAME_CREATED + " " + commands[1];
+                }
+
 
                 return (Code.CODE_NOT_IMPLEMENTED + Code.CR);
 

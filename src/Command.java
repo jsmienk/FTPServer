@@ -18,6 +18,7 @@ class Command {
     final static String CWD = "CWD"; // change
     final static String RWD = "RWD"; // remove
     final static String LIST = "LIST";
+    final static String MKD = "MKD";
 
     final static String SYST = "SYST";
     final static String TYPE = "TYPE";
