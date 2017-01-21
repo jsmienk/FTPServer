@@ -10,10 +10,10 @@ import java.util.Scanner;
 class FTPDataSocket {
 
     private OutputStream to_client_data;
-    private InputStream from_client_data;
+//    private InputStream from_client_data;
 
     FTPDataSocket(Socket s) throws IOException {
-        from_client_data = s.getInputStream();
+//        from_client_data = s.getInputStream();
         to_client_data = s.getOutputStream();
     }
 
@@ -21,9 +21,9 @@ class FTPDataSocket {
     private static byte[] loadFile(File file) throws IOException {
 
         long length = file.length();
-        if (length > Integer.MAX_VALUE) {
-            // File is too large
-        }
+//        if (length > Integer.MAX_VALUE) {
+//            // File is too large
+//        }
         InputStream is = new FileInputStream(file);
 
         byte[] bytes = new byte[(int) length];
