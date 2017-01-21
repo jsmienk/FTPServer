@@ -14,8 +14,6 @@ import java.util.Scanner;
  */
 public class Server {
 
-    public static final int TRANSFER_PORT = 6969;
-
     static final String USERS_FILEPATH = "users/";
 
     private static final int SERVER_PORT = 2100;

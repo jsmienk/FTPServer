@@ -4,20 +4,44 @@ import java.util.Base64;
 import java.util.Scanner;
 
 /**
- * Created by sveno on 19-1-2017.
+ * Author: Sven Ordelman
+ * Date created: 19-1-2017
  */
-public class FTPDataSocket {
+class FTPDataSocket {
 
-    private Socket data_socket;
     private OutputStream to_client_data;
     private InputStream from_client_data;
 
     FTPDataSocket(Socket s) throws IOException {
-        this.data_socket = s;
-        from_client_data = data_socket.getInputStream();
-        to_client_data = data_socket.getOutputStream();
+        from_client_data = s.getInputStream();
+        to_client_data = s.getOutputStream();
     }
 
+    //File to bytes
+    private static byte[] loadFile(File file) throws IOException {
+
+        long length = file.length();
+        if (length > Integer.MAX_VALUE) {
+            // File is too large
+        }
+        InputStream is = new FileInputStream(file);
+
+        byte[] bytes = new byte[(int) length];
+
+        int offset = 0;
+        int numRead;
+        while (offset < bytes.length
+                && (numRead = is.read(bytes, offset, bytes.length - offset)) >= 0) {
+            offset += numRead;
+        }
+
+        if (offset < bytes.length) {
+            throw new IOException("Could not completely read file " + file.getName());
+        }
+
+        is.close();
+        return bytes;
+    }
 
     void sendFile(String filePath) throws IOException {
         // send file back to client
@@ -47,6 +71,7 @@ public class FTPDataSocket {
         to_client_data.write(string.getBytes());
         to_client_data.flush();
     }
+    // get a message from the client
 
     void saveFile(String file, FileDirectory directory, CommandProcessor processor, ClientThread clientThread) throws IOException {
 
@@ -68,32 +93,5 @@ public class FTPDataSocket {
         } catch (IOException e) {
             e.printStackTrace();
         }*/
-    }
-    // get a message from the client
-
-
-    //File to bytes
-    private static byte[] loadFile(File file) throws IOException {
-        InputStream is = new FileInputStream(file);
-
-        long length = file.length();
-        if (length > Integer.MAX_VALUE) {
-            // File is too large
-        }
-        byte[] bytes = new byte[(int) length];
-
-        int offset = 0;
-        int numRead = 0;
-        while (offset < bytes.length
-                && (numRead = is.read(bytes, offset, bytes.length - offset)) >= 0) {
-            offset += numRead;
-        }
-
-        if (offset < bytes.length) {
-            throw new IOException("Could not completely read file " + file.getName());
-        }
-
-        is.close();
-        return bytes;
     }
 }

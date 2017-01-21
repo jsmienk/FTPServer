@@ -23,41 +23,28 @@ class FileDirectory {
         createDirectory(this.root);
     }
 
-    public void addDirectory(String directory) {
+    void addDirectory(String directory) {
         stack.add(directory);
     }
 
-    public void goBackDirectory() {
+    void goBackDirectory() {
         stack.pop();
     }
 
-    public Stack<String> getStack(){
+    Stack<String> getStack(){
         return stack;
     }
 
-    public String getPath(){
+    String getPath(){
         String path = "";
-        for (int i=0; i<stack.size(); i++) {
-            path += "/" + stack.get(i);
+        for (String aStack : stack) {
+            path += "/" + aStack;
         }
         return path;
     }
 
-    // TODO: implement
     String getDirectoryList() {
         return "/" + root.getName() + "";
-    }
-
-    String getList() {
-        String list = "";
-
-        list += "d map " + Code.NL;
-        list += " d ook een map " + Code.NL;
-        list += " - bestand " + Code.NL;
-        list += " - bestand2 " + Code.NL;
-        list += " l link " + Code.NL;
-
-        return list;
     }
 
     /**
@@ -66,14 +53,14 @@ class FileDirectory {
      * @param directory the directory
      * @return only returns true if the directory was actually created
      */
-    public boolean createDirectory(File directory) {
+    boolean createDirectory(File directory) {
         final boolean success = directory.mkdir();
         if (success)
             System.out.println("Directory '" + directory.getAbsolutePath() + "' created.");
         return success;
     }
 
-    public String getRoot() {
+    String getRoot() {
         return myRoot;
     }
 }

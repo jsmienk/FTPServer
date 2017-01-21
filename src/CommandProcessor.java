@@ -1,9 +1,7 @@
 import java.io.File;
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Stack;
 
 /**
  * Author: Jeroen
@@ -11,24 +9,17 @@ import java.util.Stack;
  */
 class CommandProcessor {
 
+    private static final int port1 = 125;
+    private static final int port2 = 63;
     private final Server server;
-
     private FileDirectory directory;
-
     private State state;
-
     private String usernameToLogin;
-
-    private final int port1 = 125;
-    private final int port2 = 63;
-    private Socket socket;
-
     private String type;
 
-    Socket dataSocket = null;
-    FTPDataSocket fileDataSocket = null;
-    ServerSocket serverSocket = null;
-
+    private Socket dataSocket = null;
+    private FTPDataSocket fileDataSocket = null;
+    private ServerSocket serverSocket = null;
 
     CommandProcessor(Server server) {
         this.server = server;
@@ -91,29 +82,29 @@ class CommandProcessor {
 
             case AUTH:
                 if (commands.length > 0 && commands[0].equals(Command.PWD)) {
-                        if(directory.getStack().size()==0)
-                            directory.addDirectory(String.valueOf(directory.getRoot()));
-                        return (Code.PATHNAME_CREATED + " " + directory.getPath());
+                    if (directory.getStack().size() == 0)
+                        directory.addDirectory(String.valueOf(directory.getRoot()));
+                    return (Code.PATHNAME_CREATED + " " + directory.getPath());
 
                 }
 
 
                 if (commands.length > 0 && commands[0].equals(Command.CWD)) {
                     if (commands[1] != null) {
-                        if(commands[1].equals("..")){
-                            if(directory.getStack().size()>0) {
+                        if (commands[1].equals("..")) {
+                            if (directory.getStack().size() > 0) {
                                 directory.goBackDirectory();
                             }
                             return (Code.REQUESTED_FILE_ACTION_OKAY + "/" + directory.getStack().peek() + Code.CR);
-                        }else {
+                        } else {
                             String[] string = commands[1].split("/");
-                            if(!directory.getStack().get(0).equals("/"+string[string.length-1])) {
+                            if (!directory.getStack().get(0).equals("/" + string[string.length - 1])) {
                                 directory.addDirectory("/" + string[string.length - 1]);
                             }
                             return (Code.REQUESTED_FILE_ACTION_OKAY + "/" + directory.getStack().peek() + Code.CR);
                         }
                     }
-                    if(directory.getStack().size()>0)
+                    if (directory.getStack().size() > 0)
                         return (Code.REQUESTED_FILE_ACTION_OKAY + " " + directory.getPath() + " " + Code.CR);
                     else
                         return (Code.REQUESTED_FILE_ACTION_OKAY + " " + directory.getRoot() + " " + Code.CR);
@@ -147,8 +138,12 @@ class CommandProcessor {
                 // PASV
                 if (commands.length > 0 && commands[0].equals(Command.PASV)) {
                     //Say that we entered passive mode on certain port.
-                    if(serverSocket!=null){serverSocket.close();}
-                    if(dataSocket!=null){dataSocket.close();}
+                    if (serverSocket != null) {
+                        serverSocket.close();
+                    }
+                    if (dataSocket != null) {
+                        dataSocket.close();
+                    }
                     clientThread.send((Code.ENTERING_PASSIVE_MODE + " "
                             + "(127,0,0,1," + port1 + "," + port2 + ")"
                             + " " + Code.CR));
@@ -191,22 +186,22 @@ class CommandProcessor {
                 }
 
                 if (commands.length > 0 && commands[0].equals(Command.RETR)) {
-                   if(commands[1]!=null){
-                       fileDataSocket.sendBackFile(commands[1], directory, this, clientThread);
-                   }
-                   return "";
+                    if (commands[1] != null) {
+                        fileDataSocket.sendBackFile(commands[1], directory, this, clientThread);
+                    }
+                    return "";
                 }
 
                 if (commands.length > 0 && commands[0].equals(Command.STOR)) {
-                    if(commands[1]!=null){
+                    if (commands[1] != null) {
                         fileDataSocket.saveFile(commands[1], directory, this, clientThread);
                     }
                     return "";
                 }
 
                 if (commands.length > 0 && commands[0].equals(Command.MKD)) {
-                    if(commands[1]!=null){
-                        directory.createDirectory(new File(Server.USERS_FILEPATH + directory.getPath()+"/"+commands[1]));
+                    if (commands[1] != null) {
+                        directory.createDirectory(new File(Server.USERS_FILEPATH + directory.getPath() + "/" + commands[1]));
                     }
                     return Code.PATHNAME_CREATED + " " + commands[1];
                 }
@@ -221,24 +216,19 @@ class CommandProcessor {
         return (Code.CODE_NOT_IMPLEMENTED + Code.CR);
     }
 
+    String getType() {
+        return type;
+    }
+
+    void closeSockets(ClientThread thread) throws IOException {
+        serverSocket.close();
+        dataSocket.close();
+        thread.send("260 Transfer complete.\n");
+    }
+
     private enum State {
         NO_AUTH,
         AUTH,
         TRANSFERRING
-    }
-
-    private enum IPVersion {
-        IPv4,
-        IPv6
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void closeSockets(ClientThread thread) throws IOException {
-        serverSocket.close();
-        dataSocket.close();
-        thread.send("260 Transfer complete.\n");
     }
 }
