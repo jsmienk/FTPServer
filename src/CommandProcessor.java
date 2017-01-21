@@ -9,22 +9,36 @@ import java.net.Socket;
  */
 class CommandProcessor {
 
+    // transferring ports
     private static final int port1 = 125;
     private static final int port2 = 63;
-    private final Server server;
-    private FileDirectory directory;
-    private State state;
-    private String usernameToLogin;
-    private String type;
 
-    private Socket dataSocket = null;
-    private FTPDataSocket fileDataSocket = null;
-    private ServerSocket serverSocket = null;
+    // our server
+    private final Server server;
+
+    // the user's directory
+    private FileDirectory directory;
+    // the client's state
+    private State state;
+
+    // the username the client is trying to login with
+    private String usernameToLogin;
+
+    // transferring type
+    private TransferType type;
+
+    private Socket dataSocket;
+    private FTPDataSocket fileDataSocket;
+    private ServerSocket serverSocket;
 
     CommandProcessor(Server server) {
         this.server = server;
+        // start in the no authentication state
         state = State.NO_AUTH;
         usernameToLogin = null;
+        dataSocket = null;
+        fileDataSocket = null;
+        serverSocket = null;
     }
 
     String processCommand(String[] commands, ClientThread clientThread) throws IOException, InterruptedException {
@@ -124,14 +138,10 @@ class CommandProcessor {
 
                 // TYPE
                 if (commands.length > 1 && commands[0].equals(Command.TYPE)) {
-                    if (commands[1].equals("I")) {
-                        type = "I";
-                        return (Code.ACTION_SUCCESSFUL + " Type set to I " + Code.CR);
-                    }
-                    if (commands[1].equals("A")) {
-                        type = "A";
-                        return (Code.ACTION_SUCCESSFUL + " Type set to A " + Code.CR);
-                    }
+                    type = TransferType.getType(commands[1]);
+                    if (type != null)
+                        return (Code.ACTION_SUCCESSFUL + " Type set to " + type + " " + Code.CR);
+
                     return (Code.SYNTAX_ERROR_IN_PARAMETERS + Code.CR);
                 }
 
@@ -216,7 +226,7 @@ class CommandProcessor {
         return (Code.CODE_NOT_IMPLEMENTED + Code.CR);
     }
 
-    String getType() {
+    TransferType getType() {
         return type;
     }
 
@@ -230,5 +240,20 @@ class CommandProcessor {
         NO_AUTH,
         AUTH,
         TRANSFERRING
+    }
+
+    enum TransferType {
+        I,
+        A;
+
+        static TransferType getType(String type) {
+            switch (type.toUpperCase()) {
+                case "I":
+                    return I;
+                case "A":
+                    return A;
+            }
+            return null;
+        }
     }
 }

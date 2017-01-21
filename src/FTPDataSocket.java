@@ -55,11 +55,11 @@ class FTPDataSocket {
 
     void sendBackFile(String file, FileDirectory directory, CommandProcessor processor, ClientThread clientThread) throws IOException {
         // Send folder back to client
-        if (processor.getType().equals("I")) {
+        if (processor.getType() == CommandProcessor.TransferType.I) {
             File file1 = new File(Server.USERS_FILEPATH + directory.getPath() + "/" + file);
             String content = new Scanner(file1).useDelimiter("\\Z").next();
             sendResponse(content);
-        } else if (processor.getType().equals("A")) {
+        } else if (processor.getType() == CommandProcessor.TransferType.A) {
             File file1 = new File(Server.USERS_FILEPATH + directory.getPath() + "/" + file);
             byte[] bytes = loadFile(file1);
             sendResponse(Base64.getEncoder().encodeToString(bytes));
@@ -71,7 +71,6 @@ class FTPDataSocket {
         to_client_data.write(string.getBytes());
         to_client_data.flush();
     }
-    // get a message from the client
 
     void saveFile(String file, FileDirectory directory, CommandProcessor processor, ClientThread clientThread) throws IOException {
 

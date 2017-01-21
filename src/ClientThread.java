@@ -1,3 +1,5 @@
+import com.sun.istack.internal.NotNull;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,21 +17,19 @@ class ClientThread extends Thread {
 
     private final CommandProcessor processor;
 
-    ClientThread(Socket clientSocket, Server server) throws IOException {
+    ClientThread(@NotNull Socket clientSocket, @NotNull Server server) throws IOException {
         assert clientSocket != null : "null socket";
         assert server != null : "null server";
 
         this.clientSocket = clientSocket;
-        writer = new PrintWriter(clientSocket.getOutputStream());
-        processor = new CommandProcessor(server);
+        this.writer = new PrintWriter(clientSocket.getOutputStream());
+        this.processor = new CommandProcessor(server);
     }
 
     @Override
     public void run() {
-        String usernameToLogin = null;
-
         // send a welcome message
-        send(Code.SERVICE_READY_FOR_NEW_USER + " Sven & Jeroen's FTP Server " + Code.CR);
+        send(Code.SERVICE_READY_FOR_NEW_USER + " Sven's & Jeroen's FTP Server " + Code.CR);
 
         try {
             final BufferedReader reader = new BufferedReader(
@@ -51,6 +51,7 @@ class ClientThread extends Thread {
                 send(processor.processCommand(commands, this));
             }
 
+            writer.close();
             clientSocket.close();
             System.out.println("Client disconnected.");
         } catch (IOException | InterruptedException ioe) {
@@ -58,7 +59,12 @@ class ClientThread extends Thread {
         }
     }
 
+    /**
+     * Send a message to the client
+     * @param s string to send
+     */
     void send(final String s) {
+        // prints it to the right of the console
         System.out.println("\t\t\t\t\t\t<--\t\t" + s);
         writer.println(s);
         writer.flush();
